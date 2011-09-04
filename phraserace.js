@@ -83,9 +83,6 @@ function tick(gs) {
 
     gs["ticks" + gs.turn] += 1;
     gs["timer" + gs.turn] = gs["timer" + gs.turn] - 1
-    if (gs["ticks" + gs.turn] % 5 == 0) {
-      gs["timer" + gs.turn + "plus"] = gs["timer" + gs.turn + "plus"] - 2
-    }    
     if (gs["ticks" + gs.turn] % 10 == 0) {
       gs["score" + gs.turn + "plus"] = Math.max(2,gs["score" + gs.turn + "plus"]/2)
     }
