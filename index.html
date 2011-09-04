@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+<head>
+<title>PhraseRace!</title>
+<script type="text/javascript" src="jquery-1.6.2.min.js"></script>
+<script type="text/javascript" src="phraserace.js"></script>
+<style>
+  .points {
+      display: inline;
+      padding: 5px;
+  }
+  #main {
+      width: 200px;
+  }
+  div {
+      text-align: center;
+      padding: 5px;
+  }
+</style>
+</head>
+<body onload="main();">
+<div id="main">
+  <div id="timers">
+    <div id="timerA" class="points"></div><div id="timerAplus" class="points"></div>
+    <div id="timerB" class="points"></div><div id="timerBplus" class="points"></div>
+  </div>
+  <div id="phrasebox">
+    <div id="phrase"></div><div id="refresh"></div>
+  </div>
+  <div id="scores">
+    <div id="scoreA" class="points"></div><div id="scoreAplus" class="points"></div>
+    <div id="scoreB" class="points"></div><div id="scoreBplus" class="points"></div>
+  </div>
+  <div id="control">Go!</div>
+</body>
+</html>
