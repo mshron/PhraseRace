@@ -10,7 +10,7 @@ function init() {
   out.timerBplusDefault = out.timePlusDefault;
   out.timerAplus = out.timerAplusDefault;
   out.timerBplus = out.timerBplusDefault;
-  out.scorePlusDefault = 16;
+  out.scorePlusDefault = 10;
   out.scoreAplus = out.scorePlusDefault;
   out.scoreBplus = out.scorePlusDefault;
   out.turnsA = 0;
@@ -18,20 +18,39 @@ function init() {
   out.ticksA = 0;
   out.ticksB = 0;
   out.turn = 'A';
-  out.phrases = ["British Parliament", "George W Bush"];
+  out.phrases = nouns;
   out.phrase = '';
   out.going = false;
   out.oneTeam = false;
+  out.started = false;
+  out.drawPlusA = false;
+  out.drawPlusB = false;
+
+  shuffle(out.phrases)
   return out
 }
+
+//shuffles list in-place
+function shuffle(list) {
+  var i, j, t;
+  for (i = 1; i < list.length; i++) {
+    j = Math.floor(Math.random()*(1+i));  // choose j in [0..i]
+    if (j != i) {
+      t = list[i];                        // swap list[i] and list[j]
+      list[i] = list[j];
+      list[j] = t;
+    }
+  }
+}
+
 
 function draw(gs) {
   var timerA = document.getElementById('timerA'),
       timerB = document.getElementById('timerB'),
       scoreA = document.getElementById('scoreA'),
       scoreB = document.getElementById('scoreB'),
-      timerAplus = document.getElementById('timerAplus'),
-      timerBplus = document.getElementById('timerBplus'),
+/*    timerAplus = document.getElementById('timerAplus'),
+      timerBplus = document.getElementById('timerBplus'), */
       scoreAplus = document.getElementById('scoreAplus'),
       scoreBplus = document.getElementById('scoreBplus'),
       phrase = document.getElementById('phrase');
@@ -40,12 +59,13 @@ function draw(gs) {
   timerB.innerHTML = gs.timerB;
   scoreA.innerHTML = gs.scoreA;
   scoreB.innerHTML = gs.scoreB;
-  timerAplus.innerHTML = "+" + gs.timerAplus;
-  timerBplus.innerHTML = "+" + gs.timerBplus;
+/*timerAplus.innerHTML = "+" + gs.timerAplus;
+  timerBplus.innerHTML = "+" + gs.timerBplus;*/
   scoreAplus.innerHTML = "+" + gs.scoreAplus;
   scoreBplus.innerHTML = "+" + gs.scoreBplus;
 
-  phrase.innerHTML = gs.phrase
+  if (gs.started) phrase.innerHTML = gs.phrase;
+
  }
 
 function changeover(gs) {
@@ -58,7 +78,7 @@ function changeover(gs) {
 
 function declareWinner(gs) {
     gs.going = false; 
-    console.log(gs.scoreA > gs.scoreB ? 'A' : 'B');
+    gs.phrase = "Team " + (gs.scoreA > gs.scoreB ? 'A' : 'B') + " wins!";
 }
 
 function tick(gs) {
@@ -83,8 +103,18 @@ function tick(gs) {
 
     gs["ticks" + gs.turn] += 1;
     gs["timer" + gs.turn] = gs["timer" + gs.turn] - 1
-    if (gs["ticks" + gs.turn] % 10 == 0) {
-      gs["score" + gs.turn + "plus"] = Math.max(2,gs["score" + gs.turn + "plus"]/2)
+    if (gs["ticks" + gs.turn] % 5 == 0) {
+      var t = gs["ticks" + gs.turn]/5;
+      switch (t) {
+          case 1:
+            gs["score" + gs.turn + "plus"] = 5;
+            break;
+          case 2:
+            gs["score" + gs.turn + "plus"] = 3;
+            break;
+          default:
+            gs["score" + gs.turn + "plus"] = 2
+      }
     }
   }
 }
@@ -103,10 +133,11 @@ function success(gs) {
   }
   gs["timer" + gs.turn] = gs["timer" + gs.turn] + gs["timer" + gs.turn + "plus"];
   gs["score" + gs.turn + "plus"] = gs.scorePlusDefault; 
+  gs["drawPlus" + gs.turn] = true;
   var turns = gs["turns" + gs.turn],
       pd = "timer" + gs.turn + "plusDefault";
   if (turns < 1) {
-    gs[pd] = 30;
+    gs[pd] = 20;
   } else if (turns < 3) {
     gs[pd] = 15;
   } else {
@@ -136,6 +167,13 @@ function main() {
         var c = document.getElementById('control');
         c.innerHTML = 'Next';
         gs.going = true;
+        gs.started = true;
       }
       });
+  $("#refresh").click(function (){
+    gs["ticks" + gs.turn] += 5;
+    gs["timer" + gs.turn] -= 5;
+    pop(gs);
+    
+  });
 }

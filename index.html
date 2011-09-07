@@ -3,33 +3,73 @@
 <head>
 <title>PhraseRace!</title>
 <script type="text/javascript" src="jquery-1.6.2.min.js"></script>
+<script type="text/javascript" src="nouns.js"></script>
 <script type="text/javascript" src="phraserace.js"></script>
 <style>
   .points {
       display: inline;
-      padding: 5px;
   }
   #main {
-      width: 200px;
+      font-size: 450%;
   }
   div {
       text-align: center;
-      padding: 5px;
+      padding-bottom: 50px;
   }
+  #control {
+      padding: 12.5px;
+      background-color: #69f;
+      border-radius: 5px;
+      font-size: 150%;
+    
+  }
+  #phrase {
+      font-size: 250%;
+  }
+  #phrasebox {
+      background-color: #ffe;
+      border: 1px dashed gray;
+  }
+  #refresh {
+      display: block;
+      position: relative;
+      width: 10%;
+      font-size: 100%;
+  }
+  #timers {
+      font-size: 150%;
+  }
+  #scores {
+      font-size: 175%;
+  }
+  #scoreAplus {
+      color: gray;
+      font-size: 90%;
+  }
+  #scoreBplus {
+      color: gray;
+      font-size: 90%;
+  }
+  div.A {
+    padding-right: 50px;
+  }
+  div.B {
+    padding-left: 50px;
+}
 </style>
 </head>
 <body onload="main();">
 <div id="main">
   <div id="timers">
-    <div id="timerA" class="points"></div><div id="timerAplus" class="points"></div>
-    <div id="timerB" class="points"></div><div id="timerBplus" class="points"></div>
+    <div id="timerA" class="points A"></div><div id="timerAplus" class="points A"></div>
+    <div id="timerB" class="points B"></div><div id="timerBplus" class="points B"></div>
   </div>
   <div id="phrasebox">
-    <div id="phrase"></div><div id="refresh"></div>
+    <div id="phrase"></div><div id="refresh">Refresh</div>
   </div>
   <div id="scores">
-    <div id="scoreA" class="points"></div><div id="scoreAplus" class="points"></div>
-    <div id="scoreB" class="points"></div><div id="scoreBplus" class="points"></div>
+    <div id="scoreA" class="points A"></div><div id="scoreAplus" class="points A"></div>
+    <div id="scoreB" class="points B"></div><div id="scoreBplus" class="points B"></div>
   </div>
   <div id="control">Go!</div>
 </body>
