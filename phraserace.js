@@ -1,30 +1,22 @@
 function init() {
   var out = {};
-  out.timeDefault = 30;
-  out.timerA = out.timeDefault;
-  out.timerB = out.timeDefault;
+  out.timeDefault = 60;
+  out.timer = out.timeDefault;
   out.scoreA = 0;
   out.scoreB = 0;
-  out.timePlusDefault = 30;
-  out.timerAplusDefault = out.timePlusDefault;
-  out.timerBplusDefault = out.timePlusDefault;
-  out.timerAplus = out.timerAplusDefault;
-  out.timerBplus = out.timerBplusDefault;
   out.scorePlusDefault = 10;
-  out.scoreAplus = out.scorePlusDefault;
-  out.scoreBplus = out.scorePlusDefault;
-  out.turnsA = 0;
-  out.turnsB = 0;
-  out.ticksA = 0;
-  out.ticksB = 0;
+  out.scoreplus = out.scorePlusDefault;
+  out.winsA = 0;
+  out.winsB = 0;
+  out.ticks = 0;
   out.turn = 'A';
   out.phrases = nouns;
   out.phrase = '';
   out.going = false;
-  out.oneTeam = false;
   out.started = false;
   out.drawPlusA = false;
   out.drawPlusB = false;
+  out.refreshable = false;
 
   shuffle(out.phrases)
   return out
@@ -45,24 +37,23 @@ function shuffle(list) {
 
 
 function draw(gs) {
-  var timerA = document.getElementById('timerA'),
-      timerB = document.getElementById('timerB'),
+  var timer = document.getElementById('timer'),
       scoreA = document.getElementById('scoreA'),
       scoreB = document.getElementById('scoreB'),
-/*    timerAplus = document.getElementById('timerAplus'),
-      timerBplus = document.getElementById('timerBplus'), */
-      scoreAplus = document.getElementById('scoreAplus'),
-      scoreBplus = document.getElementById('scoreBplus'),
+      winsA = document.getElementById('winsA'),
+      winsB = document.getElementById('winsB'),
+      otherteam = (gs.turn == 'A') ? 'B' : 'A',
+      scoreplus = document.getElementById('score' + gs.turn + 'plus'),
+      otherplus = document.getElementById('score' + otherteam + 'plus'), 
       phrase = document.getElementById('phrase');
 
-  timerA.innerHTML = gs.timerA;
-  timerB.innerHTML = gs.timerB;
+  timer.innerHTML = gs.timer;
   scoreA.innerHTML = gs.scoreA;
   scoreB.innerHTML = gs.scoreB;
-/*timerAplus.innerHTML = "+" + gs.timerAplus;
-  timerBplus.innerHTML = "+" + gs.timerBplus;*/
-  scoreAplus.innerHTML = "+" + gs.scoreAplus;
-  scoreBplus.innerHTML = "+" + gs.scoreBplus;
+  winsA.innerHTML = gs.winsA;
+  winsB.innerHTML = gs.winsB;
+  scoreplus.innerHTML = gs.scoreplus;
+  otherplus.innerHTML = "";
 
   if (gs.started) phrase.innerHTML = gs.phrase;
 
@@ -74,48 +65,37 @@ function changeover(gs) {
   } else {
       gs.turn = 'A';
   }
+  gs.refreshable = true;
 }
 
 function declareWinner(gs) {
     gs.going = false; 
-    gs.phrase = "Team " + (gs.scoreA > gs.scoreB ? 'A' : 'B') + " wins!";
+    gs.phrase = "Team " + (gs.scoreA > gs.scoreB ? 'A' : 'B') + " +1 win!";
+    gs["wins" + gs.turn] += 1
+    if (gs["winsA"] >= 7 &&  (gs["winsA"] - gs["winsB"]) > 2) {
+      gs.phrase = "VICTORY FOR TEAM A!";
+    }
+    if (gs["winsB"] >= 7 &&  (gs["winsB"] - gs["winsA"]) > 2) {
+      gs.phrase = "VIBTORY FOR TEBM B!";
+    }
 }
 
 function tick(gs) {
   if (gs.going) {
-    if (gs["timer" + gs.turn] == 0) {
-      if (gs.oneTeam) {
+    if (gs["timer"] == 0) {
         declareWinner(gs);
         return;
-      } else {
-        gs.oneTeam = true;
-        var thisTeam = gs.turn,
-            otherTeam = thisTeam == 'A' ? 'B' : 'A',
-            thisScore = gs["score" + thisTeam],
-            otherScore = gs["score" + otherTeam];
-        if (thisScore < otherScore) {
-           declareWinner(gs);
-           return;
-        }
-        changeover(gs);
-      }  
     }
 
-    gs["ticks" + gs.turn] += 1;
-    gs["timer" + gs.turn] = gs["timer" + gs.turn] - 1
-    if (gs["ticks" + gs.turn] % 5 == 0) {
-      var t = gs["ticks" + gs.turn]/5;
-      switch (t) {
-          case 1:
-            gs["score" + gs.turn + "plus"] = 5;
-            break;
-          case 2:
-            gs["score" + gs.turn + "plus"] = 3;
-            break;
-          default:
-            gs["score" + gs.turn + "plus"] = 2
-      }
+    if (gs["ticks"] > 9) {
+      gs["scoreplus"] = 5;
+    } 
+    if (gs["ticks"] > 19) {
+      gs["scoreplus"] = 3;
     }
+    
+    gs["ticks"] += 1;
+    gs["timer"] = gs["timer"] - 1
   }
 }
 
@@ -126,27 +106,11 @@ function pop(gs) {
 
 
 function success(gs) {
-  gs["score" + gs.turn] = gs["score" + gs.turn] + gs["score" + gs.turn + "plus"];
-  if ((gs["timer" + gs.turn == "A" ? "A" : "B"] == 0)
-      && (gs["score" + gs.turn] > gs["score" + gs.turn == "A" ? "A" : "B"])) {
-    declareWinner(gs);  
-  }
-  gs["timer" + gs.turn] = gs["timer" + gs.turn] + gs["timer" + gs.turn + "plus"];
+  gs["score" + gs.turn] = gs["score" + gs.turn] + gs["scoreplus"];
   gs["score" + gs.turn + "plus"] = gs.scorePlusDefault; 
   gs["drawPlus" + gs.turn] = true;
-  var turns = gs["turns" + gs.turn],
-      pd = "timer" + gs.turn + "plusDefault";
-  if (turns < 1) {
-    gs[pd] = 20;
-  } else if (turns < 3) {
-    gs[pd] = 15;
-  } else {
-    gs[pd] = 5;
-  }
-  gs["timer" + gs.turn + "plus"] = gs["timer" + gs.turn + "plusDefault"];
-  gs["ticks" + gs.turn] = 0
-  gs["turns" + gs.turn] += 1
-  if (!gs.oneTeam) changeover(gs);
+  gs["ticks"] = 0
+  changeover(gs);
   pop(gs);
 }
 
@@ -169,11 +133,13 @@ function main() {
         gs.going = true;
         gs.started = true;
       }
-      });
+  });
   $("#refresh").click(function (){
-    gs["ticks" + gs.turn] += 5;
-    gs["timer" + gs.turn] -= 5;
-    pop(gs);
-    
+    if (gs.refreshable)  {
+        gs["ticks" + gs.turn] += 5;
+        gs["timer" + gs.turn] -= 5;
+        pop(gs);
+        gs.refreshable = false;
+    } 
   });
 }
