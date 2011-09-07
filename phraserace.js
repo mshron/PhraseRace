@@ -52,7 +52,7 @@ function draw(gs) {
   scoreB.innerHTML = gs.scoreB;
   winsA.innerHTML = gs.winsA;
   winsB.innerHTML = gs.winsB;
-  scoreplus.innerHTML = gs.scoreplus;
+  scoreplus.innerHTML = "+" + gs.scoreplus;
   otherplus.innerHTML = "";
 
   if (gs.started) phrase.innerHTML = gs.phrase;
@@ -76,7 +76,7 @@ function declareWinner(gs) {
       gs.phrase = "VICTORY FOR TEAM A!";
     }
     if (gs["winsB"] >= 7 &&  (gs["winsB"] - gs["winsA"]) > 2) {
-      gs.phrase = "VIBTORY FOR TEBM B!";
+      gs.phrase = "VIBTORY FOR TEAM B!";
     }
 }
 
@@ -95,7 +95,7 @@ function tick(gs) {
     }
     
     gs["ticks"] += 1;
-    gs["timer"] = gs["timer"] - 1
+    gs["timer"] = gs["timer"] - 1;
   }
 }
 
@@ -132,12 +132,13 @@ function main() {
         c.innerHTML = 'Next';
         gs.going = true;
         gs.started = true;
+        pop(gs); 
+        gs.timer = gs.timeDefault;
       }
   });
   $("#refresh").click(function (){
     if (gs.refreshable)  {
-        gs["ticks" + gs.turn] += 5;
-        gs["timer" + gs.turn] -= 5;
+        gs["ticks"] += 5;
         pop(gs);
         gs.refreshable = false;
     } 
