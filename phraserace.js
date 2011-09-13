@@ -1,22 +1,21 @@
 function init() {
   var out = {};
   out.timeDefault = 60;
-  out.timer = out.timeDefault;
-  out.scoreA = 0;
-  out.scoreB = 0;
-  out.scorePlusDefault = 10;
-  out.scoreplus = out.scorePlusDefault;
+  out.timerA = out.timeDefault;
+  out.timerB = out.timeDefault;
   out.winsA = 0;
   out.winsB = 0;
-  out.ticks = 0;
   out.turn = 'A';
   out.phrases = nouns;
   out.phrase = '';
   out.going = false;
   out.started = false;
-  out.drawPlusA = false;
-  out.drawPlusB = false;
-  out.refreshable = false;
+  out.won = false;
+  out.hitreset = false;
+
+  out.lowtick = new Audio("beep-7.mp3");
+  out.hightick = new Audio("beep-8.mp3");
+  out.buzzer = new Audio("Buzzer1-JD.wav");
 
   shuffle(out.phrases)
   return out
@@ -37,25 +36,22 @@ function shuffle(list) {
 
 
 function draw(gs) {
-  var timer = document.getElementById('timer'),
-      scoreA = document.getElementById('scoreA'),
-      scoreB = document.getElementById('scoreB'),
+  var timerA = document.getElementById('timerA'),
+      timerB = document.getElementById('timerB'),
       winsA = document.getElementById('winsA'),
       winsB = document.getElementById('winsB'),
-      otherteam = (gs.turn == 'A') ? 'B' : 'A',
-      scoreplus = document.getElementById('score' + gs.turn + 'plus'),
-      otherplus = document.getElementById('score' + otherteam + 'plus'), 
+      round = document.getElementById('round');
       phrase = document.getElementById('phrase');
 
-  timer.innerHTML = gs.timer;
-  scoreA.innerHTML = gs.scoreA;
-  scoreB.innerHTML = gs.scoreB;
+  timerA.innerHTML = gs.timerA;
+  timerB.innerHTML = gs.timerB;
   winsA.innerHTML = gs.winsA;
   winsB.innerHTML = gs.winsB;
-  scoreplus.innerHTML = "+" + gs.scoreplus;
-  otherplus.innerHTML = "";
+  round.innerHTML = gs.winsA + gs.winsB;
 
   if (gs.started) phrase.innerHTML = gs.phrase;
+
+  
 
  }
 
@@ -65,37 +61,48 @@ function changeover(gs) {
   } else {
       gs.turn = 'A';
   }
-  gs.refreshable = true;
 }
 
 function declareWinner(gs) {
     gs.going = false; 
-    gs.phrase = "Team " + (gs.scoreA > gs.scoreB ? 'A' : 'B') + " +1 win!";
-    gs["wins" + gs.turn] += 1
-    if (gs["winsA"] >= 7 &&  (gs["winsA"] - gs["winsB"]) > 2) {
+    if (gs["timerB"] <= 0) {
+      gs.phrase = "ROUND FOR TEAM A!";
+      gs.turn = 'A';
+      gs.winsA += 1;
+    }
+    if (gs["timerA"] <= 0) {
+      gs.phrase = "ROUND FOR TEAM B!";
+      gs.turn = 'B';
+      gs.winsB += 1;
+    }
+    if (gs.winsB >= 3 && gs.winsB - gs.winsA > 1) {
+      gs.phrase = "VICTORY FOR TEAM B!";
+      gs.won = true;
+    }
+    if (gs.winsA >= 3 && gs.winsA - gs.winsB > 1) {
       gs.phrase = "VICTORY FOR TEAM A!";
+      gs.won = false;
     }
-    if (gs["winsB"] >= 7 &&  (gs["winsB"] - gs["winsA"]) > 2) {
-      gs.phrase = "VIBTORY FOR TEAM B!";
-    }
+
+
+    var control = document.getElementById('control');
+    control.innerHTML = 'Next round';
 }
 
 function tick(gs) {
   if (gs.going) {
-    if (gs["timer"] == 0) {
+    if (gs["timerA"] <= 0 || gs["timerB"] <= 0) {
+        gs.buzzer.play();
         declareWinner(gs);
         return;
     }
 
-    if (gs["ticks"] > 9) {
-      gs["scoreplus"] = 5;
-    } 
-    if (gs["ticks"] > 19) {
-      gs["scoreplus"] = 3;
+    if (gs["timer" + gs.turn] > 5) {
+      gs.lowtick.play()
+    } else {
+      gs.hightick.play()
     }
-    
-    gs["ticks"] += 1;
-    gs["timer"] = gs["timer"] - 1;
+    gs["timer" + gs.turn] = gs["timer" + gs.turn] - 1;
   }
 }
 
@@ -106,12 +113,9 @@ function pop(gs) {
 
 
 function success(gs) {
-  gs["score" + gs.turn] = gs["score" + gs.turn] + gs["scoreplus"];
-  gs["score" + gs.turn + "plus"] = gs.scorePlusDefault; 
-  gs["drawPlus" + gs.turn] = true;
-  gs["ticks"] = 0
-  changeover(gs);
-  pop(gs);
+    //gs["timer" + gs.turn] += 2;
+    changeover(gs);
+    pop(gs);
 }
 
 
@@ -123,24 +127,51 @@ function main() {
   window.setInterval(function () {
       tick(gs);
       draw(gs);
+      if (gs.won) {
+        gs.going = false;
+        gs.started = false;
+        var control = document.getElementById('control');
+        control.innerHTML = 'New Game'
+      }
       }, 1000);
   $('#control').click(function() { 
+      if (!gs.started) {
+        gs = init();
+      }
       if (gs.going) {
         success(gs);
       } else {
         var c = document.getElementById('control');
-        c.innerHTML = 'Next';
+        c.innerHTML = 'Got it!';
         gs.going = true;
         gs.started = true;
         pop(gs); 
-        gs.timer = gs.timeDefault;
+        gs.timerA = gs.timeDefault;
+        gs.timerB = gs.timeDefault;
       }
   });
   $("#refresh").click(function (){
-    if (gs.refreshable)  {
-        gs["ticks"] += 5;
+    if (gs.going && gs["timer" + gs.turn] > 5)  {
+        gs["timer" + gs.turn] -= 5;
         pop(gs);
-        gs.refreshable = false;
-    } 
+    } else if (gs.going) {
+       gs["timer" + gs.turn] = 0;
+    }
+  });
+
+  $("#reset").dblclick(function () {
+    if (!gs.going) {
+      gs = init();
+      var control = document.getElementById('control');
+      control.innerHTML = 'New Game'
+    }
+  });
+
+  $("#pause").click(function () {
+    if (gs.going) {
+      gs.going = false;
+    } else {
+      gs.going = true;
+    }
   });
 }
