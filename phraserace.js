@@ -12,6 +12,7 @@ function init() {
   out.started = false;
   out.won = false;
   out.hitreset = false;
+  out.paused = false;
 
   out.lowtick = new Audio("beep-7.mp3");
   out.hightick = new Audio("beep-8.mp3");
@@ -97,7 +98,7 @@ function tick(gs) {
         return;
     }
 
-    if (gs["timer" + gs.turn] > 5) {
+    if (gs["timer" + gs.turn] > 10) {
       gs.lowtick.play()
     } else {
       gs.hightick.play()
@@ -138,8 +139,10 @@ function main() {
       if (!gs.started) {
         gs = init();
       }
-      if (gs.going) {
+      if (gs.going && !gs.paused) {
         success(gs);
+      } else if (gs.paused) {
+        return;
       } else {
         var c = document.getElementById('control');
         c.innerHTML = 'Got it!';
@@ -169,8 +172,10 @@ function main() {
 
   $("#pause").click(function () {
     if (gs.going) {
+      gs.paused = true;
       gs.going = false;
     } else {
+      gs.paused = false;
       gs.going = true;
     }
   });
