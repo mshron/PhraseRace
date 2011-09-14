@@ -1,79 +1,66 @@
 <!doctype html>
 <html>
 <head>
-<title>PhraseRace!</title>
-<script type="text/javascript" src="jquery-1.6.2.min.js"></script>
-<script type="text/javascript" src="nouns.js"></script>
-<script type="text/javascript" src="phraserace.js"></script>
-<style>
-  .points {
-      display: inline;
-  }
-  #main {
-      font-size: 450%;
-  }
-  div {
-      text-align: center;
-      padding-bottom: 50px;
-  }
-  #control {
-      padding: 12.5px;
-      background-color: #69f;
-      border-radius: 5px;
-      font-size: 150%;
-    
-  }
-  #phrase {
-      font-size: 250%;
-  }
-  #phrasebox {
-      background-color: #ffe;
-      border: 1px dashed gray;
-  }
-  #refresh {
-      display: block;
-      position: relative;
-      width: 10%;
-      font-size: 100%;
-  }
-  #timers {
-      font-size: 150%;
-  }
-  #scores {
-      font-size: 175%;
-  }
-  #scoreAplus {
-      color: gray;
-      font-size: 90%;
-  }
-  #scoreBplus {
-      color: gray;
-      font-size: 90%;
-  }
-  div.A {
-    padding-right: 50px;
-  }
-  div.B {
-    padding-left: 50px;
-}
-</style>
+
+	<title>PhraseRace!</title>
+	
+	<meta name="viewport" content="initial-scale = 1.0,maximum-scale = 1.0" />
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	
+	<link rel="stylesheet" href="css/reset.css" type="text/css">
+	<link rel="stylesheet" href="css/phraserace.css" type="text/css">
+	
+	<script type="text/javascript" src="jquery-1.6.2.min.js"></script>
+	<script type="text/javascript" src="nouns.js"></script>
+	<script type="text/javascript" src="phraserace.js"></script>
+	
 </head>
+
 <body onload="main();">
-<div id="main">
-  <div id="round"></div>
-  <div id="wins">
-    <div id="winsA" class="points A"></div>to
-    <div id="winsB" class="points B"></div>
-  </div>
-  <div id="timers">
-    <div id="timerA" class="points"></div>
-    <div id="timerB" class="points"></div>
-  </div>
-  <div id="phrasebox">
-    <div id="phrase"></div><div id="refresh">Refresh</div>
-  </div>
-  <div id="control">Start!</div>
-  <div id="pause">||</div>
-  <div id="reset">Reset</div>
+	
+	<div id="main">
+		
+		<div id="scoreboard">
+			<div id="teamA" class="team">
+				<h2>Dragons</h2>
+				<div id="winsA" class="points A score"></div>
+				<div class="counter">
+					:<span id="timerA" class="points"></span>
+				</div>
+			</div>
+			<div id="roundbox">
+				<h2>vs</h2>
+				Round <span id="round"></span>
+			</div>
+			<div id="teamB" class="team">
+				<h2>Eagles</h2>
+				<div id="winsB" class="points B score"></div>
+				<div class="counter">
+					:<span id="timerB" class="points"></span>
+				</div>
+			</div>
+		</div>
+		
+		<div id="phrasebox">
+			“<span id="phrase"></span>”
+			<a id="refresh" href="#">Refresh</a>
+		</div>
+		
+		<div style="height:5%"></div>
+		
+		<div id="button">
+			<a id="control">Start!</a>
+		</div>
+		
+		<div style="height:5%"></div>
+		
+		<div id="pause">||</div>
+		<div id="reset">Reset</div>
+	
+	</div>
+	
 </body>
 </html>
