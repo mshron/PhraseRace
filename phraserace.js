@@ -174,9 +174,15 @@ function main() {
     if (gs.going) {
       gs.paused = true;
       gs.going = false;
+      $('#pause_overlay').show();
     } else {
       gs.paused = false;
       gs.going = true;
     }
+  });
+  
+  $("#resume").click(function () {
+    $("#pause").click();
+    $('#pause_overlay').hide();
   });
 }

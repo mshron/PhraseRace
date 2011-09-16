@@ -97,3 +97,32 @@ div#reset {
 	font-weight: bold;
 	float: right;
 }
+div#pause_overlay {
+	background: rgba(0,0,0,0.7);
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	right: 0;
+	left: 0;
+	top: 0;
+	bottom: 0;
+}
+div#pause_overlay a#resume {
+	background: rgba(0,0,0,0.5);
+	background: rgba(255,255,255,0.8);
+	padding: 10% 0;
+	display: block;
+	text-align: center;
+	color: white;
+	color: #444;
+	font-weight: bold;
+	font-size: 20px;
+	text-decoration: none;
+	margin: 20px;
+	position: relative;
+	top: 30%;
+}
+div#pause_overlay a#resume:active {
+	background: #eee;
+	color: #444;
+}
